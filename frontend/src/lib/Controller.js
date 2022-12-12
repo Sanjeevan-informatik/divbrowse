@@ -290,6 +290,40 @@ export default class Controller {
     }
 
 
+    async phylogenetic(params, callback) {
+        let samples;
+        if (this.config.samples === undefined || this.config.samples.length == 0) {
+            samples = this.metadata.samples;
+        } else {
+            samples = this.config.samples;
+        }
+
+        let payload = {
+            chrom: this.chromosome,
+            startpos: params['startpos'],
+            endpos: params['endpos'],
+            samples: params['select_sample'],
+            number_of_sample: params['number_of_sample'],
+        };
+
+        if (params['variantFilterSettings'] !== undefined && typeof params['variantFilterSettings'] === 'object') {
+            payload['variant_filter_settings'] = params['variantFilterSettings'];
+        }
+
+        this.eventbus.emit('loading:animation:pca', {status: true});
+
+        axios.post(this.config.apiBaseUrl+'/phylo_cluster', payload).then(response => {
+            this.eventbus.emit('loading:animation:pca', {status: false});
+            callback(response.data);
+        })
+        .catch(error => {
+            console.log(error);
+            this.eventbus.emit('loading:animation:pca', {status: false});
+            //self.raiseError('Error: Could not load any data from the server / backend.')
+        });
+    }
+
+
     async blast(params, callback) {
         const payload = {
             query: params.query,

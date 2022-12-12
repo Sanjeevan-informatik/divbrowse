@@ -18,11 +18,14 @@ from divbrowse.lib.annotation_data import AnnotationData
 from divbrowse.lib.genotype_data import GenotypeData
 from divbrowse.lib.analysis import Analysis
 
-from divbrowse.brapi.v2.allelematrix import BrapiAllelematrix
 
 from divbrowse.lib.utils import ApiError
 from divbrowse.lib.utils import StrictEncoder
 
+# %% Import Libraries for phylogenitic 
+from divbrowse.lib.utils import to_newick
+from scipy.cluster.hierarchy import ClusterWarning, linkage, to_tree
+from scipy.spatial import distance_matrix
 
 def create_app(filename_config_yaml = 'divbrowse.config.yml', config_runtime=None):
     """Factory method to create and return a wsgi-compliant Flask app instance"""
@@ -155,6 +158,45 @@ def create_app(filename_config_yaml = 'divbrowse.config.yml', config_runtime=Non
         return jsonify(result)
 
 
+    @app.route("/phylo_cluster", methods = ['GET', 'POST', 'OPTIONS'])
+    def __phylo_cluster():
+        
+        payload = request.get_json(silent=True)
+        if request.method == 'POST':
+            input = process_request_vars(payload)
+        else:
+            return 'ERROR'
+
+        number_of_sample = payload['number_of_sample']
+
+
+        _result = gd.get_slice_of_variant_calls( 
+            chrom = input['chrom'],
+            startpos = input['startpos'],
+            endpos = input['endpos'],
+            samples = input['samples'],
+            variant_filter_settings = input['variant_filter_settings']
+        ) 
+
+        df = pd.DataFrame(_result.numbers_of_alternate_alleles, index= _result.samples_selected_mapped)
+        df = df.replace(-1, 0)
+ 
+        sampel_data =pd.DataFrame(distance_matrix(df.values, df.values), index=df.index, columns=df.index)
+        sampel_data = sampel_data.iloc[ : number_of_sample , : number_of_sample ]
+        
+        labelList = _result.samples_selected_mapped[:number_of_sample]
+        Z1 = linkage(sampel_data, method='single', metric='euclidean')
+        
+        T = to_tree(Z1, rd=False)
+        
+
+        result = {
+            'phylogenetic_result': to_newick(T, labelList),
+            'number_of_sample': len(sampel_data)
+
+        }
+
+        return jsonify(result)
 
 
     @app.route("/variant_calls", methods = ['GET', 'POST', 'OPTIONS'])

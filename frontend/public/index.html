@@ -11,7 +11,9 @@
 
     <link rel='stylesheet' href='./build/bundle.css'>
 
-    <script defer src='./build/bundle.js'></script>
+    <script defer src='./build/bundle.js'></script> 
+    <script defer src='http://d3js.org/d3.v3.min.js'></script> 
+    <script defer src='http://d3js.org/d3.v4.min.js'></script> 
 </head>
 
 <body>
@@ -22,7 +24,7 @@
 
         document.addEventListener("DOMContentLoaded", function(event) {
             let config = {
-                apiBaseUrl: 'localhost:8080',
+                apiBaseUrl: 'http://127.0.0.1:8090',
                 showAllSamplesOnInit: true,
                 allowPca: true,
                 allowVcfExport: true,

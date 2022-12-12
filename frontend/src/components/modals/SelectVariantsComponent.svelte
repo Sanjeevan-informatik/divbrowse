@@ -1,5 +1,6 @@
 <script>
 export let onCallToAction = null;
+export let onCallTophygenetic =null;
 export let callbackExportVcf = null;
 export let callbackExportGff = null;
 export let settings;
@@ -199,7 +200,11 @@ const doCalculation = () => {
     onCallToAction(startpos, endpos, useVariantFilter, callbackSuccess);
 };
 
-
+const doPhylogenetic= () => {
+        doCalcBtnDisabled = false;
+        const callbackSuccess = () => { doCalcBtnDisabled = true; }
+        onCallTophygenetic(startpos, endpos, useVariantFilter, callbackSuccess);
+};
 
 
 const showVariantFilterModal = () => {
@@ -340,6 +345,7 @@ $: if (errorMsg) {
     <div style="margin-top: 25px;" class="clearfix">
 
         <button on:click|preventDefault={doCalculation} disabled="{doCalcBtnDisabled}" type="button" class="divbrowse-btn divbrowse-btn-light btn-cta" style="float:left;">Start data analysis</button>
+        <button on:click|preventDefault={doPhylogenetic} disabled="{doCalcBtnDisabled}" type="button" class="divbrowse-btn divbrowse-btn-light btn-cta" style="float:left;">phylogenetic tree</button>
         <button on:click|preventDefault={() => callbackExportVcf(startpos, endpos, useVariantFilter, () => {})} disabled="{doCalcBtnDisabled}" type="button" class="divbrowse-btn divbrowse-btn-light btn-cta" style="float:left;">Export VCF</button>
         <button on:click|preventDefault={() => callbackExportGff(startpos, endpos, useVariantFilter, () => {})} disabled="{doCalcBtnDisabled}" type="button" class="divbrowse-btn divbrowse-btn-light btn-cta" style="float:left;">Export GFF3</button>
 

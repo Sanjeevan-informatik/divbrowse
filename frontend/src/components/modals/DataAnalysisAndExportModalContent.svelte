@@ -9,6 +9,7 @@ const { variantFilterSettings, filteredVariantsCoordinates } = getStores();
 import SelectVariantsComponent from '/components/modals/SelectVariantsComponent.svelte';
 
 import DataAnalysisModalContent from '/components/modals/DataAnalysisModalContent.svelte';
+import PhylogeneticTreeContext from '/components/modals/PhylogeneticTreeContextModal.svelte';
 const { open } = getContext('2nd-modal');
 
 let vcfExportHiddenForm;
@@ -38,6 +39,19 @@ function openDataAnalysisModal(startpos, endpos, useVariantFilter, callbackSucce
     }
 
     open(DataAnalysisModalContent, {params: params}, {styleWindow: { width: '100%', height: '92vh' }}, {onClosed: () => { console.log('CLOSED') }});
+}
+
+function  openPhylogeneticTreeContextModal(startpos, endpos, useVariantFilter, callbackSuccess) {
+    
+    let params = {
+        startpos: startpos,
+        endpos: endpos,
+    }
+    if (useVariantFilter) {
+        params['variantFilterSettings'] = $variantFilterSettings;
+    }
+
+    open(PhylogeneticTreeContext, {params: params}, {styleWindow: { width: '100%', height: '92vh' }}, {onClosed: () => { console.log('CLOSED') }});
 }
 
 
@@ -103,6 +117,7 @@ let settingsSelectSnpsDialogue = {
     <SelectVariantsComponent 
         bind:this={instanceSelectVariantComponent} 
         onCallToAction={openDataAnalysisModal} 
+        onCallTophygenetic={openPhylogeneticTreeContextModal} 
         callbackExportVcf={callbackExportVcf} 
         callbackExportGff={callbackExportGff} 
         settings={settingsSelectSnpsDialogue} 
