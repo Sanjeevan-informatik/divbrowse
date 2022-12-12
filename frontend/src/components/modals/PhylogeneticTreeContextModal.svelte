@@ -73,7 +73,7 @@ function draw_graph() {
     -->
 
         <div style="float: left;">
-            <label style="margin-left: 30px;">Select the samples : </label>
+            <label style="margin-left: 30px;">Select the samples :</label>
             <textarea  class="divbrowse-form-control" style="float:right; margin-left: 10px;"  id="rightPlotMethod"   bind:value={samples_list}   rows="20" cols="250"></textarea>
 
         </div>
